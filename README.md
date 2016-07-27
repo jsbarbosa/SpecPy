@@ -1,3 +1,3 @@
 # SpecPy
 Real time Spectrum Analyzer
-[[https://raw.githubusercontent.com/jsbarbosa/SpecPy/master/SpecPy.png]]
+[[https://github.com/jsbarbosa/SpecPy/blob/master/SpecPy.png|alt=octocat]]
