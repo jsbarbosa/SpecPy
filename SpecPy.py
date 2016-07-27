@@ -14,8 +14,11 @@ import matplotlib.pyplot as plt
 import csv
  
 # Folder in which to save the output data
-
+#DELIMITER = ","
 PATH = "Captures"
+CAMARA = 0
+STREAMWIDTH = 680
+STREAMHEIGHT = 480
 
 class CapturedFrame:
     def __init__(self, frame, identifier, center, interval, path):
@@ -148,23 +151,49 @@ class RealTimePlot:
         plt.close()  
         
 class GuiWindow:
-    def __init__(self, name, camara, path):
+    def __init__(self, name, camara, streamWidth, streamHeight, path):
         self.name = name
+        self.trackBarName = "Settings"
         self.camara = camara
         self.path = path
         self.input = cv2.VideoCapture(camara)
+        
+        self.brightness = 50
+        self.constrast = 50
+        self.saturation = 50
+        self.hue = 50
+        self.gain = 50
+        self.exposure = 50
+        
         self.frame = self.input.read()[1]
         self.height, self.width, _ = self.frame.shape
-        self.pixelLine = 0
-        self.range = 1
+        self.streamHeight = streamHeight
+        self.streamWidth = streamWidth
+        self.pixelLine = int(np.ceil(self.height/2))
+        self.range = int(np.ceil(self.height/4))
         self.kbkey = 0
         self.createTrackBars()
         self.actualPlot = RealTimePlot(self.height, self.width)
+        
+        self.brightnessTrackBar(self.brightness)
+        self.constrastTrackBar(self.constrast)
+        self.saturationTrackBar(self.saturation)
+        self.hueTrackBar(self.hue)
+        self.gainTrackBar(self.gain)
+        self.exposureTrackBar(self.exposure)
     
     def createTrackBars(self):
-        cv2.namedWindow(self.name)
-        cv2.createTrackbar("Position", self.name, 0, self.height, self.posTrackBar)
-        cv2.createTrackbar("Size", self.name, 1, self.height, self.rangeTrackBar)
+        cv2.namedWindow(self.trackBarName)
+        cv2.createTrackbar("Position", self.trackBarName, self.pixelLine, self.height, self.posTrackBar)
+        cv2.createTrackbar("Size", self.trackBarName, self.range, self.height, self.rangeTrackBar)
+        cv2.createTrackbar("Brightness", self.trackBarName, self.brightness, 100, self.brightnessTrackBar)
+        cv2.createTrackbar("Contrast", self.trackBarName, self.constrast, 100, self.constrastTrackBar)
+        cv2.createTrackbar("Saturation", self.trackBarName, self.saturation, 100, self.saturationTrackBar)
+        cv2.createTrackbar("Hue", self.trackBarName, self.hue, 100, self.hueTrackBar)
+        cv2.createTrackbar("Gain", self.trackBarName, self.gain, 100, self.gainTrackBar)
+        cv2.createTrackbar("Exposure", self.trackBarName, self.exposure*100, 100, self.exposureTrackBar)       
+        
+        cv2.resizeWindow(self.trackBarName, 100, 50)
         
     def squareInFrame(self):
         cv2.rectangle(self.frame, (0, self.pixelLine-self.range), (self.width-2, self.pixelLine+self.range), (0, 255, 255), 2)
@@ -181,27 +210,48 @@ class GuiWindow:
     def rangeTrackBar(self, size):
         self.range = size
         
+    def brightnessTrackBar(self, brightness):
+        self.brightness = brightness
+        self.input.set(10, self.brightness/100)
+        
+    def constrastTrackBar(self, constrast):
+        self.constrast = constrast
+        self.input.set(11, self.constrast/100)
+        
+    def saturationTrackBar(self, saturation):
+        self.saturation = saturation
+        self.input.set(12, self.saturation/100)
+        
+    def hueTrackBar(self, hue):
+        self.hue = hue
+        self.input.set(13, self.hue/100)
+        
+    def gainTrackBar(self, gain):
+        self.gain = gain
+        self.input.set(14, self.gain/100)
+        
+    def exposureTrackBar(self, exposure):
+        self.exposure = exposure
+        self.input.set(15, self.exposure/100)
+    
+    def resize(self):
+        self.frame = cv2.resize(self.frame, (self.streamWidth, self.streamHeight))
+        
     def show(self):
         cv2.imshow(self.name, self.frame)
     
     def loop(self):
         fig_num = 0
+        closed = False
         while True:
             self.frame = self.input.read()[1]
             temp_frame = self.frame.copy()
             self.squareInFrame()
             self.textInFrame()
-            closed = True
-            try:
-                cv2.getWindowProperty(self.name, 0)
-                closed = False
-            except:
-                pass
-            if closed:
-                self.createTrackBars()
             self.kbkey = cv2.waitKey(1) & 0xff
             if self.kbkey == 27:
                 break
+            
             elif self.kbkey == 10:
                 temp = CapturedFrame(temp_frame, fig_num, self.pixelLine, self.range, self.path)
                 self.actualPlot.includeCapturedFrame(temp)
@@ -209,8 +259,16 @@ class GuiWindow:
                 temp.image = self.frame
                 temp.saveFrame()
                 fig_num += 1
+                
             elif self.kbkey == ord('c'):
                 self.actualPlot.cleanPlot()
+            elif self.kbkey == 32:      # Space bar
+                if closed:
+                    self.createTrackBars()
+                else:
+                    cv2.destroyWindow(self.trackBarName)
+                closed = not closed
+            self.resize()
             self.show()
         self.actualPlot.close()
         cv2.destroyAllWindows()
@@ -225,6 +283,6 @@ if __name__ == "__main__":
             os.remove(item)
             
     camara = 0
-    cam = GuiWindow("Stream", camara, PATH)
+    cam = GuiWindow("Stream", CAMARA, STREAMWIDTH, STREAMHEIGHT, PATH)
     cam.loop()
             
