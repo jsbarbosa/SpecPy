@@ -3,9 +3,9 @@
 
 Real time Spectrum Analyzer.
 SpecPy uses the following modules:
--OpenCV 3
--matplotlib
--os
--glob
--NumPy
--csv
+- OpenCV 3
+- matplotlib
+- os
+- glob
+- NumPy
+- csv
