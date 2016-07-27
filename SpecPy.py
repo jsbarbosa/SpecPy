@@ -209,7 +209,7 @@ class GuiWindow:
             elif self.kbkey == ord('c'):
                 self.actualPlot.cleanPlot()
             self.show()
-print("Init")
+
 if not os.path.exists(PATH):
         os.makedirs(PATH)
 else:
