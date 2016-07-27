@@ -143,6 +143,9 @@ class RealTimePlot:
         self.linesRegular = []
         self.fig.canvas.draw()
         self.background = self.fig.canvas.copy_from_bbox(self.ax1.get_figure().bbox)
+
+    def close(self):
+        plt.close()  
         
 class GuiWindow:
     def __init__(self, name, camara, path):
@@ -209,15 +212,19 @@ class GuiWindow:
             elif self.kbkey == ord('c'):
                 self.actualPlot.cleanPlot()
             self.show()
-
-if not os.path.exists(PATH):
-        os.makedirs(PATH)
-else:
-    temp = glob.glob(PATH+'/*.jpg')
-    for item in temp:
-        os.remove(item)
+        self.actualPlot.close()
+        cv2.destroyAllWindows()
+        self.input.release()
         
-camara = 0
-cam = GuiWindow("Stream", camara, PATH)
-cam.loop()
+if __name__ == "__main__":
+    if not os.path.exists(PATH):
+        os.makedirs(PATH)
+    else:
+        temp = glob.glob(PATH+'/*.jpg')
+        for item in temp:
+            os.remove(item)
+            
+    camara = 0
+    cam = GuiWindow("Stream", camara, PATH)
+    cam.loop()
             
