@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['SpecPySplash.py'],
-             pathex=['C:\\Users\\lenovo\\Desktop'],
+             pathex=['C:\\Users\\lenovo\\Desktop\\SpecPy'],
              binaries=None,
-             datas=[('C:\\Users\\lenovo\\Anaconda3\\Library\\bin\\mkl_avx.dll', '.' )],
+             datas=[('C:\\Users\\lenovo\\Anaconda3\\Library\\bin\\mkl_avx.dll', '.' ), ('C:\\Users\\lenovo\\Anaconda3\\Library\\bin\\mkl_p4.dll', '.' )],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -15,7 +15,7 @@ a = Analysis(['SpecPySplash.py'],
              win_private_assemblies=False,
              cipher=block_cipher)
 
-a.datas += [('SpecPy.png', 'C:\\Users\\lenovo\\Desktop\\SpecPy.png', 'DATA' )]
+#a.datas += [('SpecPy.png', 'C:\\Users\\lenovo\\Desktop\\SpecPy\\SpecPy.png', 'DATA' )]
 
 
 pyz = PYZ(a.pure, a.zipped_data,
@@ -26,7 +26,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='SpecPySplash',
+          name='SpecPy',
           debug=False,
           strip=False,
           upx=True,
