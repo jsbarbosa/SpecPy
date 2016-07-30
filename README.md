@@ -16,3 +16,5 @@ SpecPy uses the following modules:
 - glob
 - NumPy
 - csv
+
+SpecPy is free to use and distribute. Executables files are hosted by [SourceForce](http://sourceforce.net)
