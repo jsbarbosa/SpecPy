@@ -9,8 +9,13 @@ import cv2
 import os
 import glob
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
+
+
+#from PyQt4.QtCore import *
+#from PyQt4.QtGui import *
+#from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+#import sys
 import csv
  
 # Folder in which to save the output data
@@ -92,13 +97,14 @@ class CapturedFrame:
                 
 class RealTimePlot:    
     fig, (ax1, ax2) = plt.subplots(2, figsize = (8, 4.5))
-    ax1.set_ylabel("Normal intensity (a.u.)")
-    ax2.set_ylabel("Intensity (a.u.)")
-    ax2.set_xlabel("Pixel")
-#    plt.tight_layout()
+#    ax1.set_ylabel("Normal intensity (a.u.)")
+#    ax2.set_ylabel("Intensity (a.u.)")
+#    ax2.set_xlabel("Pixel")
+    fig.set_facecolor("None")
+    plt.tight_layout()
     linesNormal = []
     linesRegular = []
-    def __init__(self, height, width, size = (8, 4.5)):
+    def __init__(self, height, width, size = (8, 4.5), windowPath = None):
         self.fig.set_size_inches(size)
         self.height = height
         self.width = width
@@ -109,10 +115,14 @@ class RealTimePlot:
         self.ax1.hold(True)
         self.ax2.hold(True)
         self.ax1.grid()
-        self.ax2.grid()
+        self.ax2.grid()  
+        if windowPath == None:
+            self.fig.show(False)
 #        self.fig.canvas.manager.window.attributes('-topmost', 1)
-        self.fig.show(False)
-        plt.draw()
+#        self.fig.show(False)
+            plt.draw()
+            
+        
         self.background = self.fig.canvas.copy_from_bbox(self.ax1.get_figure().bbox)
         self.x = np.linspace(0, self.width, self.width)    
         
@@ -150,8 +160,11 @@ class RealTimePlot:
     def close(self):
         plt.close()  
         
+    def figureReturn(self):
+        return self.fig
+        
 class GuiWindow:
-    def __init__(self, name, camara, streamWidth, streamHeight, path):
+    def __init__(self, name, camara, streamWidth, streamHeight, path, window = None):
         self.name = name
         self.trackBarName = "Settings"
         self.camara = camara
@@ -166,43 +179,74 @@ class GuiWindow:
         self.exposure = 50
         
         self.frame = self.input.read()[1]
+        self.analysisFrame = self.frame.copy()
         self.height, self.width, _ = self.frame.shape
         self.streamHeight = streamHeight
         self.streamWidth = streamWidth
         self.pixelLine = int(np.ceil(self.height/2))
         self.range = int(np.ceil(self.height/4))
         self.kbkey = 0
-        self.createTrackBars()
-        self.actualPlot = RealTimePlot(self.height, self.width)
-        
-        self.brightnessTrackBar(self.brightness)
-        self.constrastTrackBar(self.constrast)
-        self.saturationTrackBar(self.saturation)
-        self.hueTrackBar(self.hue)
-        self.gainTrackBar(self.gain)
-        self.exposureTrackBar(self.exposure)
-    
-    def createTrackBars(self):
-        cv2.namedWindow(self.trackBarName)
-        cv2.createTrackbar("Position", self.trackBarName, self.pixelLine, self.height, self.posTrackBar)
-        cv2.createTrackbar("Size", self.trackBarName, self.range, self.height, self.rangeTrackBar)
-        cv2.createTrackbar("Brightness", self.trackBarName, self.brightness, 100, self.brightnessTrackBar)
-        cv2.createTrackbar("Contrast", self.trackBarName, self.constrast, 100, self.constrastTrackBar)
-        cv2.createTrackbar("Saturation", self.trackBarName, self.saturation, 100, self.saturationTrackBar)
-        cv2.createTrackbar("Hue", self.trackBarName, self.hue, 100, self.hueTrackBar)
-        cv2.createTrackbar("Gain", self.trackBarName, self.gain, 100, self.gainTrackBar)
-        cv2.createTrackbar("Exposure", self.trackBarName, self.exposure*100, 100, self.exposureTrackBar)       
-        
-        cv2.resizeWindow(self.trackBarName, 100, 50)
-        
+#        self.createTrackBars()
+        self.actualPlot = RealTimePlot(self.height, self.width, windowPath=window)
+        self.figure = self.actualPlot.figureReturn()
+#        self.canvas = self.canvas#self.actualPlot.figureReturn()
+            
     def squareInFrame(self):
-        cv2.rectangle(self.frame, (0, self.pixelLine-self.range), (self.width-2, self.pixelLine+self.range), (0, 255, 255), 2)
-        cv2.rectangle(self.frame, (0, self.pixelLine), (self.width-1, self.pixelLine), (0, 255, 0), 2)
+        cv2.rectangle(self.frame, (0, self.pixelLine-self.range), (self.width, self.pixelLine-self.range), (0, 255, 255), 3)
+        cv2.rectangle(self.frame, (0, self.pixelLine+self.range), (self.width, self.pixelLine+self.range), (0, 255, 255), 3)
+        cv2.rectangle(self.frame, (0, self.pixelLine), (self.width, self.pixelLine), (0, 255, 0), 3)
+        
+    def resize(self):
+        self.frame = cv2.resize(self.frame, (self.streamWidth, self.streamHeight))
+   
+    def captureData(self, temp_frame, fig_num):
+        temp = CapturedFrame(temp_frame, fig_num, self.pixelLine, self.range, self.path)
+        self.actualPlot.includeCapturedFrame(temp)
+        self.actualPlot.plotRefresh()
+        temp.image = self.frame
+        temp.saveFrame()
+        fig_num += 1
+        return fig_num
+    
+    def cleanData(self):
+        self.actualPlot.cleanPlot()
+        
+    def eachPhotogram(self):
+        self.frame = self.input.read()[1]
+        if self.frame == None:
+            return False
+        
+        self.analysisFrame = self.frame.copy()
+        self.squareInFrame()
+        self.kbkey = cv2.waitKey(1) & 0xff
 
-    def textInFrame(self):
-        cv2.putText(self.frame, "Esc to exit", (5, 25), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0,0,255)) 
-        cv2.putText(self.frame, "c to clear plot", (5, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0,0,255)) 
-        cv2.putText(self.frame, "Enter to capture frame", (5, 65), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0,0,255)) 
+        if self.kbkey == 10:
+            pass
+            
+        self.figure = self.actualPlot.figureReturn()
+        self.resize()
+        self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+        return True
+    
+    def loop(self):
+        fig_num = 0
+        closed = False
+        while True:
+            fig_num, closed = self.eachPhotogram(fig_num, closed)
+            if fig_num == None:
+                break
+        self.closeInput()
+        
+    def closeInput(self):
+#        self.actualPlot.close()
+        cv2.destroyAllWindows()
+        self.input.release()
+        
+    def changeWidth(self, width):
+        self.streamWidth = width
+       
+    def changeHeight(self, height):
+        self.streamHeight = height
         
     def posTrackBar(self, pos):
         self.pixelLine = pos
@@ -233,46 +277,11 @@ class GuiWindow:
     def exposureTrackBar(self, exposure):
         self.exposure = exposure
         self.input.set(15, self.exposure/100)
-    
-    def resize(self):
-        self.frame = cv2.resize(self.frame, (self.streamWidth, self.streamHeight))
         
-    def show(self):
-        cv2.imshow(self.name, self.frame)
-    
-    def loop(self):
-        fig_num = 0
-        closed = False
-        while True:
-            self.frame = self.input.read()[1]
-            temp_frame = self.frame.copy()
-            self.squareInFrame()
-            self.textInFrame()
-            self.kbkey = cv2.waitKey(1) & 0xff
-            if self.kbkey == 27:
-                break
-            
-            elif self.kbkey == 10:
-                temp = CapturedFrame(temp_frame, fig_num, self.pixelLine, self.range, self.path)
-                self.actualPlot.includeCapturedFrame(temp)
-                self.actualPlot.plotRefresh()
-                temp.image = self.frame
-                temp.saveFrame()
-                fig_num += 1
-                
-            elif self.kbkey == ord('c'):
-                self.actualPlot.cleanPlot()
-            elif self.kbkey == 32:      # Space bar
-                if closed:
-                    self.createTrackBars()
-                else:
-                    cv2.destroyWindow(self.trackBarName)
-                closed = not closed
-            self.resize()
-            self.show()
-        self.actualPlot.close()
-        cv2.destroyAllWindows()
-        self.input.release()
+
+"""
+GUI
+"""                                
         
 if __name__ == "__main__":
     if not os.path.exists(PATH):
@@ -281,6 +290,3 @@ if __name__ == "__main__":
         temp = glob.glob(PATH+'/*.jpg')
         for item in temp:
             os.remove(item)
-            
-    cam = GuiWindow("Stream", CAMARA, STREAMWIDTH, STREAMHEIGHT, PATH)
-    cam.loop()
