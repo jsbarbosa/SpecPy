@@ -4,10 +4,14 @@
 
 Using a simple USB webcamara SpecPy is capable of recording frames as intensity data. With a Graphical User Interface based on Qt, camara settings are simple to control. Recorded frames are stored inside a dedicated folder, along with the generated data, thus allowing further analysis.
 
+SpecPy is now capable of analysing images.
+
 SpecPy allows the use of keyboard shortcuts:
 - Press C to clear the plots
 - Press Enter to capture current frame
 - Press R to reset settings
+- Press Space bar to start/stop streaming
+- Press Ctrl + S to select an output directory
 
 SpecPy uses the following modules:
 - OpenCV 3
