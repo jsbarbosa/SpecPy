@@ -21,6 +21,7 @@ app.processEvents()
 from mainwindow import Ui_MainWindow
 import sys
 import SpecPy as specpy
+import platform
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas)
 
@@ -30,7 +31,7 @@ CAPTUREWIDTH = 680
 CAPTUREHEIGHT = 480
 STREAMWIDTH = 100
 STREAMHEIGHT = int(3*STREAMWIDTH/4)
-
+PLATFORM = platform.system()
 PATH = "../Captures"
 POS = int(CAPTUREHEIGHT/2)
 SIZE = int(POS/2)
@@ -416,8 +417,12 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         
     def updateFileList(self):
         self.namesOnly = []
+        if PLATFORM == "Linux":
+            breaker = '/'
+        else:
+            breaker = '\\'
         for file in self.filenames:
-            temp = file.rpartition('/')
+            temp = file.rpartition(breaker)
             self.namesOnly.append(temp[-1])
             path = temp[:-1][0]
         self.inputLineEdit.setText(path)
