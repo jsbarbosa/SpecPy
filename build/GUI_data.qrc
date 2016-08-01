@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file>Icon.png</file>
+    <file>SpecPy.png</file>
+  </qresource>
+</RCC>
