@@ -3,7 +3,10 @@
 ![SpecPy](https://github.com/jsbarbosa/SpecPy/blob/master/SpecPy.png)
 
 Using a simple USB webcamara SpecPy is capable of recording frames as intensity data. With a Graphical User Interface based on Qt, camara settings are simple to control. Recorded frames are stored inside a dedicated folder, along with the generated data, thus allowing further analysis.
+
+SpecPy is free to use and distribute. Executables files are hosted by [SourceForge](http://sourceforge.net), [Linux](https://sourceforge.net/projects/specpy/files/Linux/) and [Windows](https://sourceforge.net/projects/specpy/files/Windows/) are currently soported.
 ![Platforms](https://github.com/jsbarbosa/SpecPy/blob/master/additional/Main.png)
+
 SpecPy is now capable of analysing images.
 
 SpecPy allows the use of keyboard shortcuts:
@@ -20,5 +23,3 @@ SpecPy uses the following modules:
 - glob
 - NumPy
 - csv
-
-SpecPy is free to use and distribute. Executables files are hosted by [SourceForge](http://sourceforge.net), [Linux](https://sourceforge.net/projects/specpy/files/Linux/) and [Windows](https://sourceforge.net/projects/specpy/files/Windows/) are currently soported.
