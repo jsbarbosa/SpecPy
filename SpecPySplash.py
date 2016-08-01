@@ -6,11 +6,11 @@ Created on Thu Jul 28 19:36:14 2016
 """
 
 #from PyQt4.uic import loadUiType
-from mainwindow import Ui_MainWindow
-from PyQt4 import QtCore, QtGui
-import sys, GUI_data
 
-app = QtGui.QApplication(sys.argv)
+from PyQt4 import QtCore, QtGui
+import GUI_data
+
+app = QtGui.QApplication([])
 # Create and display the splash screen
 splash_pix = QtGui.QPixmap(':/SpecPy.png')
 splash = QtGui.QSplashScreen(splash_pix, QtCore.Qt.WindowStaysOnTopHint)
@@ -18,6 +18,8 @@ splash.show()
 
 app.processEvents()
 
+from mainwindow import Ui_MainWindow
+import sys
 import SpecPy as specpy
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas)
@@ -57,7 +59,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.camara = CAMARA
         self.camaraLine.setText(self.camara)        
         
-#        self.pathCleaner(True)
         self.status = False
         self.cam = None
         
@@ -494,7 +495,5 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         
 main = Main()
 main.show()
-#pathCleaner()
 splash.close()
-#main.update()
 sys.exit(app.exec_())
