@@ -3,7 +3,7 @@
 block_cipher = None
 
 a = Analysis(['SpecPySplash.py'],
-             pathex=['/home/juan/Desktop/GUI\ Development'],
+             pathex=['/home/juan/Desktop/SpecPy'],
              binaries=None,
              datas=[( '/home/juan/anaconda3/lib/libmkl_avx.so', '.' )],
              hiddenimports=[],
