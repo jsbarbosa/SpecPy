@@ -8,7 +8,7 @@ SpecPy is free to use and distribute. Executables files are hosted by [SourceFor
 
 ![Platforms](https://github.com/jsbarbosa/SpecPy/blob/master/additional/Main.png)
 
-SpecPy is now capable of analysing images.
+SpecPy is now capable of analysing images, keeping in mind that *Simple is better than complex*.
 
 ![Images](https://github.com/jsbarbosa/SpecPy/blob/master/additional/ImageBased.gif)
 
