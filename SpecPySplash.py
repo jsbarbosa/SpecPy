@@ -482,10 +482,10 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                     
         self.pathCleaner(False) 
         number = len(self.filenames)
-        progressBar_unit = int(100/number)
+        progressBar_unit = 100/number
         def threadUpdate(pos):
             pos = int(pos)
-            self.progressBar.setValue(pos*progressBar_unit)
+            self.progressBar.setValue(int(pos*progressBar_unit))
             self.currentFileLabel.setText(self.namesOnly[pos-1])
             if pos == number:
                 self.progressBar.setValue(100)
