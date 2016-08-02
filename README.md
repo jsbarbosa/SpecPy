@@ -10,7 +10,7 @@ SpecPy is free to use and distribute. Executables files are hosted by [SourceFor
 
 SpecPy is now capable of analysing images.
 
-![Images](https://github.com/jsbarbosa/SpecPy/blob/master/additional/ImagesBased.gif)
+![Images](https://github.com/jsbarbosa/SpecPy/blob/master/additional/ImageBased.gif)
 
 SpecPy allows the use of keyboard shortcuts:
 - Press C to clear the plots
