@@ -35,6 +35,7 @@ class CapturedFrame:
         if frameType is np.ndarray:
             self.image = frame
         else:
+            print(frame)
             self.image = cv2.imread(frame)
         
         self.objectName = objectName
@@ -84,7 +85,8 @@ class CapturedFrame:
             file = open(directory, 'r')
             csvFile = csv.reader(file, delimiter=',')
             for item in csvFile:
-                temp.append(item)
+                if item != []:
+                    temp.append(item)
             file.close()
             return temp
             
@@ -96,11 +98,11 @@ class CapturedFrame:
                 wr = csv.writer(file)
                 wr.writerow(["x data", self.objectName + ' ' + self.identifier])
                 for (x, value) in enumerate(inten):
-                    wr.writerow([x+1, value])
+                    wr.writerow([x+1, str(value)])
                 file.close()
         else:
             for(inten, direc) in zip(data_arrays, directories):
-                data = csv2list(direc)                
+                data = csv2list(direc)      
                 num_rows = len(data) - 1        # Because of the information row
                 columnNumber = len(data[0])
                 num_inten_rows = len(inten)
@@ -112,6 +114,7 @@ class CapturedFrame:
                     while num_rows - 1 < num_inten_rows:
                         row = list(row_prototype)
                         row[0] = x
+#                        row[-1] = str(row[-1]) + '\n'
                         data.append(row)
                         num_rows += 1
                         x += 1
