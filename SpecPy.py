@@ -35,7 +35,6 @@ class CapturedFrame:
         if frameType is np.ndarray:
             self.image = frame
         else:
-            print(frame)
             self.image = cv2.imread(frame)
         
         self.objectName = objectName
@@ -311,15 +310,15 @@ class GuiWindow:
         
     def gainTrackBar(self, gain):
         self.gain = gain
-#        if PLATFORM == "Linux":
-#            self.gain *= 1/100
         self.input.set(14, self.gain)
         
     def exposureTrackBar(self, exposure):
         self.exposure = exposure
-#        if PLATFORM == "Linux":
-#            self.exposure *= 1/100
-        self.input.set(15, -int(self.exposure/100))
+        if PLATFORM == "Windows":
+            self.exposure = -int(self.exposure/10)
+        elif PLATFORM == "Linux":
+            self.exposure = self.exposure*10
+        self.input.set(15, self.exposure)
         
     def setCaptureWidth(self, width):
         self.analysisWidth = width
